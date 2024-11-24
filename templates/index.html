@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List frm JJ</title>
+    <link rel="stylesheet" href="/static/css/styles.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <div class="container"> <!-- Main container for the content -->
+        <h1>To-Do List frm JJ</h1> <!-- Main heading -->
+        <form action="/add" method="POST"> <!-- Form to add a new task -->
+            <input type="text" name="content" placeholder="Enter a new task" required> <!-- Input for task content -->
+            <button type="submit">Add</button> <!-- Submit button for the form -->
+        </form>
+        <ul> <!-- Unordered list to display tasks -->
+            {% for task in tasks %} <!-- Loop through each task -->
+            <li>
+                <span style="text-decoration: {{ 'line-through' if task.completed else 'none' }}"> <!-- Conditional styling for completed tasks -->
+                    {{ task.content }} <!-- Display task content -->
+                </span>
+                <a href="/complete/{{ task.id }}">[Complete]</a> <!-- Link to mark task as complete -->
+                <a href="/delete/{{ task.id }}">[Delete]</a> <!-- Link to delete the task -->
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
