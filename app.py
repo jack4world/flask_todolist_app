@@ -1,6 +1,7 @@
 #database/model/control
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'  # Database URI for SQLite
@@ -9,9 +10,11 @@ db = SQLAlchemy(app)  # Initialize SQLAlchemy with the Flask app
 
 # Database model
 class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)  # Primary key for the task
-    content = db.Column(db.String(200), nullable=False)  # Task content, cannot be null
-    completed = db.Column(db.Boolean, default=False)  # Task completion status, defaults to False
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(200), nullable=False)
+    completed = db.Column(db.Boolean, default=False)
+    due_date = db.Column(db.DateTime, nullable=True)
+    priority = db.Column(db.String(10), default='Low')  # Default is 'Low'
 
 # Routes
 @app.route('/')
@@ -21,12 +24,18 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add():
-    task_content = request.form['content']  # Get task content from the form
-    if task_content:  # Check if content is provided
-        new_task = Task(content=task_content)  # Create a new Task instance
-        db.session.add(new_task)  # Add the new task to the session
-        db.session.commit()  # Commit the session to save the task
-    return redirect(url_for('index'))  # Redirect to the index page
+    task_content = request.form['content']
+    due_date = request.form['due_date']
+    priority = request.form['priority']
+    if task_content:
+        new_task = Task(
+            content=task_content,
+            due_date=datetime.strptime(due_date, '%Y-%m-%d') if due_date else None,
+            priority=priority
+        )
+        db.session.add(new_task)
+        db.session.commit()
+    return redirect(url_for('index'))
 
 @app.route('/delete/<int:task_id>')
 def delete(task_id):
@@ -43,6 +52,18 @@ def complete(task_id):
         task.completed = not task.completed  # Toggle the completion status
         db.session.commit()  # Commit the session to save changes
     return redirect(url_for('index'))  # Redirect to the index page
+
+@app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
+def edit(task_id):
+    task = Task.query.get(task_id)
+    if request.method == 'POST':
+        updated_content = request.form['content']
+        if updated_content:
+            task.content = updated_content
+            db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('edit.html', task=task)
+
 
 if __name__ == "__main__":
     with app.app_context():

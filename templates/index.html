@@ -11,6 +11,12 @@
         <h1>To-Do List frm JJ</h1> <!-- Main heading -->
         <form action="/add" method="POST"> <!-- Form to add a new task -->
             <input type="text" name="content" placeholder="Enter a new task" required> <!-- Input for task content -->
+            <input type="date" name="due_date">
+            <select name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
             <button type="submit">Add</button> <!-- Submit button for the form -->
         </form>
         <ul> <!-- Unordered list to display tasks -->
@@ -19,8 +25,13 @@
                 <span style="text-decoration: {{ 'line-through' if task.completed else 'none' }}"> <!-- Conditional styling for completed tasks -->
                     {{ task.content }} <!-- Display task content -->
                 </span>
+                <small>(Priority: {{ task.priority }})</small>
+                {% if task.due_date %} <!-- Check if the task has a due date -->
+                <small>(Due: {{ task.due_date.strftime('%Y-%m-%d') }})</small> <!-- Display the due date in YYYY-MM-DD format -->
+                {% endif %} <!-- End of due date check -->
                 <a href="/complete/{{ task.id }}">[Complete]</a> <!-- Link to mark task as complete -->
                 <a href="/delete/{{ task.id }}">[Delete]</a> <!-- Link to delete the task -->
+                <a href="/edit/{{ task.id }}">[Edit]</a>
             </li>
             {% endfor %}
         </ul>
