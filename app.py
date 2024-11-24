@@ -4,9 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'  # Database URI for SQLite
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'sqlite:///db.sqlite'
+)#server cloud
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'  # server local
 app.config['SECRET_KEY'] = 'your_secret_key'  # For WTForms security
 db = SQLAlchemy(app)  # Initialize SQLAlchemy with the Flask app
 
@@ -124,4 +128,5 @@ def logout():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()  # Create database tables if they don't exist
-    app.run(debug=True)  # Run the app in debug mode
+    #app.run(debug=True)  # serve locally
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))#serve on cloud

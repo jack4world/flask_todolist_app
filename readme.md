@@ -14,7 +14,13 @@ Ensure no duplicate tasks.
 Styling:
 Use a CSS framework like Bootstrap for a polished look.
 
-3\git commit -m""
-Deploy:
-Deploy the app on Heroku or Render.
+3\git commit -m "add login and bootrap"
+
+4\git commit -m "Deploy to Render"
+
+5\next?
+database:mitgate
+debug:logger
+css:animation
+confugiration:CDD and design pattern
 
